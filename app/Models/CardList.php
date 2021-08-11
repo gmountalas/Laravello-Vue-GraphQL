@@ -11,6 +11,8 @@ class CardList extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['title', 'order', 'list_id', 'owner_id'];
+
     public function cards(): HasMany
     {
         return $this->hasMany(Card::class, 'list_id');
