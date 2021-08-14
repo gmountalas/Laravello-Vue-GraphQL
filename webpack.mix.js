@@ -16,6 +16,24 @@ mix.js('resources/js/app.js', 'public/js')
     .postCss("resources/css/app.css", "public/css", [
         require("tailwindcss"),
     ]).vue();
+
+mix.extend(
+    'graphql',
+    new class {
+        dependencies() {
+            return ['graphql', 'graphql-tag']
+        }
+
+        webpackRules() {
+            return {
+                test: /\.(graphql|gql)$/,
+                exclude: /node_modules/,
+                loader: 'graphql-tag/loader'
+            }
+        }
+    }()
+);
 if (mix.inProduction())
     mix.version();
+mix.graphql();
 
