@@ -7671,33 +7671,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   methods: {
     addCard: function addCard() {
-      this.$apollo.mutate({
-        mutation: (_graphql_CardAdd_gql__WEBPACK_IMPORTED_MODULE_0___default()),
-        variables: {
-          title: "Added through mutation",
-          listId: 1,
-          order: 1
-        },
-        update: function update(store, _ref) {
-          var cardAdd = _ref.data.cardAdd;
-          // Read the data from our cache for this query.
-          var data = store.readQuery({
-            query: (_graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1___default()),
-            variables: {
-              id: 1
-            }
-          }); // Add our card from the mutation to the end
-
-          data.board.lists.find(function (list) {
-            return list.id = 1;
-          }).cards.push(cardAdd); // Write our data back to the cache.
-
-          store.writeQuery({
-            query: (_graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1___default()),
-            data: data
-          });
-        }
-      });
+      this.$emit("click"); // this.$apollo.mutate({
+      //   mutation: CardAdd,
+      //   variables: {
+      //     title: "Added through mutation",
+      //     listId: 1,
+      //     order: 1
+      //   },
+      //   update: (store, { data: { cardAdd } }) => {
+      //     // Read the data from our cache for this query.
+      //     const data = store.readQuery({
+      //       query: BoardQuery,
+      //       variables: { id: 1 }
+      //     });
+      //     // Add our card from the mutation to the end
+      //     data.board.lists.find(list => (list.id = 1)).cards.push(cardAdd);
+      //     // Write our data back to the cache.
+      //     store.writeQuery({ query: BoardQuery, data });
+      //   }
+      // });
     }
   }
 });
@@ -7725,11 +7717,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
       title: null
     };
+  },
+  mounted: function mounted() {
+    this.$refs.card.focus();
   }
 });
 
@@ -7773,6 +7771,11 @@ __webpack_require__.r(__webpack_exports__);
   },
   props: {
     list: Object
+  },
+  data: function data() {
+    return {
+      editing: false
+    };
   }
 });
 
@@ -30131,11 +30134,32 @@ var render = function() {
           expression: "title"
         }
       ],
+      ref: "card",
       staticClass:
         " rounded-md shadow-card py-1 px-2 outline-none w-full text-gray-900 text-sm bg-white h-16 resize-none",
       attrs: { placeholder: "Enter a title for the card..." },
       domProps: { value: _vm.title },
       on: {
+        keyup: [
+          function($event) {
+            if (
+              !$event.type.indexOf("key") &&
+              _vm._k($event.keyCode, "esc", 27, $event.key, ["Esc", "Escape"])
+            ) {
+              return null
+            }
+            return _vm.$emit("closed")
+          },
+          function($event) {
+            if (
+              !$event.type.indexOf("key") &&
+              _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+            ) {
+              return null
+            }
+            return _vm.$emit("closed")
+          }
+        ],
         input: function($event) {
           if ($event.target.composing) {
             return
@@ -30183,9 +30207,21 @@ var render = function() {
         return _c("card", { key: card.id, attrs: { card: card } })
       }),
       _vm._v(" "),
-      _c("card-editor"),
-      _vm._v(" "),
-      _c("card-add-button")
+      _vm.editing
+        ? _c("card-editor", {
+            on: {
+              closed: function($event) {
+                _vm.editing = false
+              }
+            }
+          })
+        : _c("card-add-button", {
+            on: {
+              click: function($event) {
+                _vm.editing = true
+              }
+            }
+          })
     ],
     2
   )
