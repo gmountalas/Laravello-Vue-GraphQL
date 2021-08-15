@@ -7655,6 +7655,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _graphql_CardAdd_gql__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../graphql/CardAdd.gql */ "./resources/js/graphql/CardAdd.gql");
 /* harmony import */ var _graphql_CardAdd_gql__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_graphql_CardAdd_gql__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../graphql/BoardWithListsAndCards.gql */ "./resources/js/graphql/BoardWithListsAndCards.gql");
+/* harmony import */ var _graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1__);
 //
 //
 //
@@ -7665,6 +7667,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   methods: {
     addCard: function addCard() {
@@ -7674,6 +7677,25 @@ __webpack_require__.r(__webpack_exports__);
           title: "Added through mutation",
           listId: 1,
           order: 1
+        },
+        update: function update(store, _ref) {
+          var cardAdd = _ref.data.cardAdd;
+          // Read the data from our cache for this query.
+          var data = store.readQuery({
+            query: (_graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1___default()),
+            variables: {
+              id: 1
+            }
+          }); // Add our card from the mutation to the end
+
+          data.board.lists.find(function (list) {
+            return list.id = 1;
+          }).cards.push(cardAdd); // Write our data back to the cache.
+
+          store.writeQuery({
+            query: (_graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1___default()),
+            data: data
+          });
         }
       });
     }
