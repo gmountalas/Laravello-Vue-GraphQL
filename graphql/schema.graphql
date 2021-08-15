@@ -40,6 +40,7 @@ type CardList {
   title: String!
   cards: [Card!]! @hasMany
   board: Board! @belongsTo
+  board_id: ID!
   created_at: DateTime!
   updated_at: DateTime!
 }
