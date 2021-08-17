@@ -10,6 +10,7 @@
       v-if="editing"
       @closed="editing = false"
       :list="list"
+      @added="$emit('card-added', { ...$event, listId: list.id })"
     ></card-editor>
     <card-add-button v-else @click="editing = true"></card-add-button>
   </div>

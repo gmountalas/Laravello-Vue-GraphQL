@@ -53,21 +53,11 @@ export default {
           listId: this.list.id,
           order: this.list.cards.length + 1
         },
-        update: (store, { data: { cardAdd } }) => {
-          // Read the data from our cache for this query.
-          const data = store.readQuery({
-            query: BoardQuery,
-            variables: { id: Number(self.list.board_id) }
-          });
-          // Add our card from the mutation to the end
-          data.board.lists
-            .find(list => list.id == self.list.id)
-            .cards.push(cardAdd);
-          // Write our data back to the cache.
-          store.writeQuery({ query: BoardQuery, data });
+        update(store, { data: { cardAdd } }) {
+          self.$emit("added", { store, data: cardAdd });
+          self.closed();
         }
       });
-      this.closed();
     },
     closed() {
       this.$emit("closed");
