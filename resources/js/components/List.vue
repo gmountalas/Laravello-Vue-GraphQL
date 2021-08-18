@@ -4,7 +4,12 @@
       <div class="text-gray-800 pl-2 pb-2 font-bold">{{ list.title }}</div>
     </div>
 
-    <card v-for="card in list.cards" :key="card.id" :card="card"></card>
+    <card
+      v-for="card in list.cards"
+      :key="card.id"
+      :card="card"
+      @deleted="$emit('card-deleted', { ...$event, listId: list.id })"
+    ></card>
 
     <card-editor
       v-if="editing"

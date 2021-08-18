@@ -7571,8 +7571,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _components_List__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/List */ "./resources/js/components/List.vue");
-/* harmony import */ var _graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./graphql/BoardWithListsAndCards.gql */ "./resources/js/graphql/BoardWithListsAndCards.gql");
-/* harmony import */ var _graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constants */ "./resources/js/constants.js");
+/* harmony import */ var _graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./graphql/BoardWithListsAndCards.gql */ "./resources/js/graphql/BoardWithListsAndCards.gql");
+/* harmony import */ var _graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_2__);
 //
 //
 //
@@ -7602,6 +7603,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -7610,7 +7613,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   apollo: {
     board: {
-      query: (_graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1___default()),
+      query: (_graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_2___default()),
       variables: {
         id: 1
       }
@@ -7620,18 +7623,35 @@ __webpack_require__.r(__webpack_exports__);
     updateQueryCache: function updateQueryCache(event) {
       // Read the data from our cache for this query.
       var data = event.store.readQuery({
-        query: (_graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1___default()),
+        query: (_graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_2___default()),
         variables: {
           id: Number(this.board.id)
         }
-      }); // Add our card from the mutation to the end
+      });
 
-      data.board.lists.find(function (list) {
-        return list.id == event.listId;
-      }).cards.push(event.data); // Write our data back to the cache.
+      var listById = function listById() {
+        return data.board.lists.find(function (list) {
+          return list.id == event.listId;
+        });
+      };
+
+      switch (event.type) {
+        case _constants__WEBPACK_IMPORTED_MODULE_1__.EVENT_CARD_ADDED:
+          // Add our card from the mutation to the end of the list
+          listById().cards.push(event.data);
+          break;
+
+        case _constants__WEBPACK_IMPORTED_MODULE_1__.EVENT_CARD_DELETED:
+          // Remove the deleted card from the list
+          listById().cards = listById().cards.filter(function (card) {
+            return card.id != event.data.id;
+          });
+          break;
+      } // Write our data back to the cache.
+
 
       event.store.writeQuery({
-        query: (_graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1___default()),
+        query: (_graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_2___default()),
         data: data
       });
     }
@@ -7653,6 +7673,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _graphql_CardDelete_gql__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../graphql/CardDelete.gql */ "./resources/js/graphql/CardDelete.gql");
 /* harmony import */ var _graphql_CardDelete_gql__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_graphql_CardDelete_gql__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../constants */ "./resources/js/constants.js");
 //
 //
 //
@@ -7668,16 +7689,26 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: {
     card: Object
   },
   methods: {
     cardDelete: function cardDelete() {
+      var self = this;
       this.$apollo.mutate({
         mutation: (_graphql_CardDelete_gql__WEBPACK_IMPORTED_MODULE_0___default()),
         variables: {
           id: this.card.id
+        },
+        update: function update(store, _ref) {
+          var cardDelete = _ref.data.cardDelete;
+          self.$emit("deleted", {
+            store: store,
+            data: cardDelete,
+            type: _constants__WEBPACK_IMPORTED_MODULE_1__.EVENT_CARD_DELETED
+          });
         }
       });
     }
@@ -7701,6 +7732,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _graphql_CardAdd_gql__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_graphql_CardAdd_gql__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../graphql/BoardWithListsAndCards.gql */ "./resources/js/graphql/BoardWithListsAndCards.gql");
 /* harmony import */ var _graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_graphql_BoardWithListsAndCards_gql__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../constants */ "./resources/js/constants.js");
 //
 //
 //
@@ -7729,6 +7761,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -7757,7 +7790,8 @@ __webpack_require__.r(__webpack_exports__);
           var cardAdd = _ref.data.cardAdd;
           self.$emit("added", {
             store: store,
-            data: cardAdd
+            data: cardAdd,
+            type: _constants__WEBPACK_IMPORTED_MODULE_2__.EVENT_CARD_ADDED
           });
           self.closed();
         }
@@ -7785,6 +7819,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Card__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Card */ "./resources/js/components/Card.vue");
 /* harmony import */ var _CardAddButton__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CardAddButton */ "./resources/js/components/CardAddButton.vue");
 /* harmony import */ var _CardEditor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CardEditor */ "./resources/js/components/CardEditor.vue");
+//
+//
+//
+//
+//
 //
 //
 //
@@ -7894,6 +7933,23 @@ window._ = lodash__WEBPACK_IMPORTED_MODULE_0__; // try {
 // } catch (e) {}
 // window.axios = require('axios');
 // window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+/***/ }),
+
+/***/ "./resources/js/constants.js":
+/*!***********************************!*\
+  !*** ./resources/js/constants.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "EVENT_CARD_ADDED": () => (/* binding */ EVENT_CARD_ADDED),
+/* harmony export */   "EVENT_CARD_DELETED": () => (/* binding */ EVENT_CARD_DELETED)
+/* harmony export */ });
+var EVENT_CARD_ADDED = 'EVENT_CARD_ADDED';
+var EVENT_CARD_DELETED = 'EVENT_CARD_DELETED';
 
 /***/ }),
 
@@ -30164,6 +30220,9 @@ var render = function() {
                   on: {
                     "card-added": function($event) {
                       return _vm.updateQueryCache($event)
+                    },
+                    "card-deleted": function($event) {
+                      return _vm.updateQueryCache($event)
                     }
                   }
                 })
@@ -30419,7 +30478,18 @@ var render = function() {
       ]),
       _vm._v(" "),
       _vm._l(_vm.list.cards, function(card) {
-        return _c("card", { key: card.id, attrs: { card: card } })
+        return _c("card", {
+          key: card.id,
+          attrs: { card: card },
+          on: {
+            deleted: function($event) {
+              return _vm.$emit(
+                "card-deleted",
+                Object.assign({}, $event, { listId: _vm.list.id })
+              )
+            }
+          }
+        })
       }),
       _vm._v(" "),
       _vm.editing

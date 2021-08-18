@@ -21,6 +21,7 @@
           v-for="list in board.lists"
           :key="list.id"
           @card-added="updateQueryCache($event)"
+          @card-deleted="updateQueryCache($event)"
         ></list>
       </div>
     </div>
@@ -29,6 +30,7 @@
 
 <script>
 import List from "./components/List";
+import { EVENT_CARD_ADDED, EVENT_CARD_DELETED } from "./constants";
 import BoardQuery from "./graphql/BoardWithListsAndCards.gql";
 
 export default {
@@ -50,10 +52,22 @@ export default {
         query: BoardQuery,
         variables: { id: Number(this.board.id) }
       });
-      // Add our card from the mutation to the end
-      data.board.lists
-        .find(list => list.id == event.listId)
-        .cards.push(event.data);
+
+      const listById = () =>
+        data.board.lists.find(list => list.id == event.listId);
+
+      switch (event.type) {
+        case EVENT_CARD_ADDED:
+          // Add our card from the mutation to the end of the list
+          listById().cards.push(event.data);
+          break;
+        case EVENT_CARD_DELETED:
+          // Remove the deleted card from the list
+          listById().cards = listById().cards.filter(
+            card => card.id != event.data.id
+          );
+          break;
+      }
       // Write our data back to the cache.
       event.store.writeQuery({ query: BoardQuery, data });
     }
